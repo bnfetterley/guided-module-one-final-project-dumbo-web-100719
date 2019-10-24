@@ -74,6 +74,15 @@ def create_feeling
   @feelings = Feeling.create(name: @feeling, intensity: @feeling_intensity, user_id: @user.id, event_id: @event.id)
 end
 
+def update_feeling
+  prompt = TTY::Prompt.new
+  @feelings_array = Feeling.all.map {|feeling| feeling.name}
+  @feeling = prompt.select("Which feeling do you want to update?", @feelings_array)
+  @feeling_instance_update = Feeling.find_by(name: @feeling)
+  @updated_feeling = prompt.ask("What do you want to update this feeling to?")
+  @feeling_instance_update.update(name: @updated_feeling)
+end
+
 
 def display_feeling_history
   prompt = TTY::Prompt.new

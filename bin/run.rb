@@ -10,5 +10,6 @@ new_cli.event_categories
 new_cli.create_feeling
 new_cli.display_feeling_history
 new_cli.display_event_history
+new_cli.update_feeling
 new_cli.delete_feeling
 new_cli.delete_event
