@@ -22,6 +22,7 @@ class CommandLineInterface
     @user = User.create(name: @name)  #User.all.name.include? (@name)
     # end
   end
+
   def feeling_attributes
     prompt = TTY::Prompt.new
     @mood = prompt.select("How are you feeling today, #{@user.name}?") do |menu|
@@ -53,7 +54,6 @@ class CommandLineInterface
       menu.choice '4'
       menu.choice '5'
     end
-    @feeling_instance = Feeling.create(name: @feeling,user_id: @user.id , intensity: @feeling_intensity)
   end
 
 def event_categories
@@ -65,31 +65,54 @@ def event_categories
   menu.choice 'Social'
   menu.choice 'Food'
 end
-event_description = prompt.ask("What happened?")
-event_description
+@event_description = prompt.ask("What happened?")
+@event_description
 @event = Event.create(category: @event_category,description: @event_description)
 end
 
 def create_feeling
   @feelings = Feeling.create(name: @feeling, intensity: @feeling_intensity, user_id: @user.id, event_id: @event.id)
-  @feelings
 end
 
-def display_events
-    prompt = TTY::Prompt.new
-    feeling_array  = Feeling.all.map do |feeling|
-      feeling.user_id == @user.id
-    @user_response= prompt.select("Feelings Menu:") do |menu|
-    menu.choice feeling_array[0].name => 1
-    menu.choice feeling_array[1].name => 2
-    menu.choice feeling_array[2].name => 3  
-    menu.choice feeling_array[3].name => 4
-    end
-    if @user_response == 1 then feeling_array.name
-    end
-  end
+
+def display_feeling_history
+  prompt = TTY::Prompt.new
+   @feelings_array = Feeling.all.map {|feeling| feeling.name}
+   @feeling = prompt.select("Which feeling do you want to see?", @feelings_array)
+   @feeling_instance = Feeling.find_by(name: @feeling)
+   @this_event_id = @feeling_instance.event_id
+   @event_instance = Event.find_by(id: @this_event_id)
+  #  binding.pry
+   puts "I feel #{@feeling_instance.intensity} #{@feeling_instance.name} when #{@event_instance.description}"
 end
-# # def display_feelings
+
+def display_event_history
+   prompt = TTY::Prompt.new
+   @events_array = Event.all.map {|event| event.category}
+   @event_choice = prompt.select("Which event do you want to see?", @events_array)
+   @event_instance2 = Event.find_by(category: @event_choice)
+  #  this_feeling_id = event_instance.id
+   @feeling_instance = Feeling.find_by(event_id: @event_instance2.id)
+   puts "When #{@event_instance.description}, I felt #{@feeling_instance.name}"
+end
+
+def delete_feeling
+  prompt = TTY::Prompt.new
+  @feelings_array = Feeling.all.map {|feeling| feeling.name}
+  @feeling = prompt.select("Which feeling do you want to delete?", @feelings_array)
+  @feeling_instance = Feeling.find_by(name: @feeling)
+  @feeling_instance.destroy
+end
+
+
+def delete_event
+  prompt = TTY::Prompt.new
+   @events_array = Event.all.map {|event| event.category}
+   @event_choice = prompt.select("Which event do you want to see?", @events_array)
+   @event_instance2 = Event.find_by(category: @event_choice)
+   @event_instance.destroy
+end
+
 
 # # end
 
