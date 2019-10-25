@@ -6,7 +6,16 @@ class CommandLineInterface
   # include module
   # Opening pic
 
+  
 
+
+  def render_ascii_art
+       return_string = ""
+       File.foreach("lib/asii_images/ascii.txt") do |line|
+           return_string += line
+       end
+      puts return_string
+  end
 include MoodHackers
 
   def sam_say(text)
@@ -28,6 +37,10 @@ end
     self.sam_say('Welcome to MoodHacker!')
     sleep (0.03)
     self.alex_say("Take charge of your life by looking inward.")
+    file = "/Users/hamidoudiallo/Desktop/guided_project_1/guided-module-one-final-project-dumbo-web-100719/lib/project_music/music.mp3"
+    play =  exec 'mpg123','-q', file
+    play
+    binding.pry
   end
   
   def get_name
