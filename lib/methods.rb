@@ -57,7 +57,9 @@
 # # Health
 # # Social
 # # 6. Describe the event (logs with timestamp)
+
 # # And log date (maybe)
+
 # # 7. Displays log (and log history)
 # # Display most frequent emotions with prescription
 
