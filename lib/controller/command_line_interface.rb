@@ -3,31 +3,40 @@ require 'pry'
 
 
 class CommandLineInterface
-  def welcome
-    puts "Welcome to MoodHacker!"
-    puts "Take charge of your life by looking inward."
+  # include module
+  # Opening pic
+
+
+include MoodHackers
+
+  def sam_say(text)
+	  system("say -v samantha '#{text}'")
+  end
+  def alex_say(text)
+	  system("say -v alex '#{text}'")
   end
 
+def pastel
+  @pastel = Pastel.new
+end 
 
-
+  def welcome
+    system 'clear'
+    puts @pastel.red.bold("#{IMAGE_TITLE}")
+    puts @pastel.cyan.bold("#{MAIN_IMAGE}")
+    puts "Welcome to MoodHacker![audio announcement playing, text will proceed]"
+    self.sam_say('Welcome to MoodHacker!')
+    sleep (0.03)
+    self.alex_say("Take charge of your life by looking inward.")
+  end
+  
   def get_name
     prompt = TTY::Prompt.new
     @name = prompt.ask("What is your name?")
-    # if User.all.include?(@name)  
-    #   @user = User.id
-    # else
-    # if User.find_by(name: @name)
-    #   puts "already exists"
-    #   @user = User.id
-    # else
-      # puts "doesnt exist"
-      # unless
-    @user = User.create(name: @name)  #User.all.name.include? (@name)
-    # end
+    @user = User.create(name: @name) 
   end
-
+  # system "clear" cmd v
   def main_menu
-    
     prompt = TTY::Prompt.new
     menu_screen = prompt.select('What do you want to do?',[
         { name: 'Log a feeling', value: 1 },
@@ -60,25 +69,19 @@ class CommandLineInterface
         end
     end
 
-def exit_out
-    puts "Goodbye and stay healthy!".red
-    Feeling.destroy_all
-    Event.destroy_all
-    exit
-end
-
-# def go_back
-#   prompt = TTY::Prompt.new
-#     menu_ = prompt.select('What do you want to do?',[
-#         { name: 'Log a feeling', value: 1 }
-# end
+  def exit_out
+      puts "Goodbye and stay healthy!".red
+      Feeling.destroy_all
+      Event.destroy_all
+      exit
+  end
 
   def feeling_attributes
     prompt = TTY::Prompt.new
     @mood = prompt.select("How are you feeling today, #{@user.name}?") do |menu|
     # binding.pry
-    menu.choice 'Good'
-    menu.choice 'Not so great'
+      menu.choice 'Good'
+      menu.choice 'Not so great'
     end
     
     if @mood == 'Good' then @feeling = prompt.select("What is your feeling?") do |menu|
@@ -106,98 +109,98 @@ end
     end
   end
 
-def event_categories
-  prompt = TTY::Prompt.new
-  @event_category = prompt.select("What part of your life is this related to?") do |menu|
-  menu.choice 'Love'
-  menu.choice 'Career'
-  menu.choice 'Family'
-  menu.choice 'Social'
-  menu.choice 'Food'
-end
-@event_description = prompt.ask("What happened?")
-@event_description
-@event = Event.create(category: @event_category,description: @event_description)
-end
+  def event_categories
+    prompt = TTY::Prompt.new
+    @event_category = prompt.select("What part of your life is this related to?") do |menu|
+      menu.choice 'Love'
+      menu.choice 'Career'
+      menu.choice 'Family'
+      menu.choice 'Social'
+      menu.choice 'Food'
+    end
+    @event_description = prompt.ask("What happened?")
+    @event_description
+    @event = Event.create(category: @event_category,description: @event_description)
+  end
 
-def create_feeling
-  @feelings = Feeling.create(name: @feeling, intensity: @feeling_intensity, user_id: @user.id, event_id: @event.id)
-  puts "Feeling logged!"
-  sleep 3 
-  main_menu
-end
+  def create_feeling
+    @feelings = Feeling.create(name: @feeling, intensity: @feeling_intensity, user_id: @user.id, event_id: @event.id)
+    puts "Feeling logged! ~ I feel level #{@pastel.red.bold@feeling_intensity} #{@pastel.yellow.bold@feeling} when #{@pastel.green.bold@event_description}"
+    sleep 3 
+    main_menu
+  end
 
-def update_feeling
-  prompt = TTY::Prompt.new
-  if Feeling.all.empty?
-    puts "No feelings to show"
-    sleep 5
-  main_menu
-    else
-  @feelings_array_a = Feeling.all.select {|feeling| feeling.user_id == @user.id}
-  @feeling = prompt.select("Which feeling do you want to update", @feelings_array_a)
-  @feeling_instance_update = Feeling.find_by(name: @feeling)
-  @updated_feeling = prompt.ask("What do you want to update this feeling to?")
-  @feeling_instance_update.update(name: @updated_feeling)
-  puts "Updated: You feel #{@updated_feeling} when #{@event.description}"
-sleep 5
-  main_menu
-end
-end
-
-def update_event
-  prompt = TTY::Prompt.new
-    if Event.all.empty?
-    puts "No events to show"
-    sleep 5
-  main_menu
-    else
-  @events_array = Event.all.map {|event| event.category}
-  @event2 = prompt.select("Which event do you want to update?", @events_array)
-  @event_instance_update = Event.find_by(category: @event2)
-  @updated_event = prompt.ask("What do you want to update this event to?")
-  @event_instance_update.update(description: @updated_event)
-  puts "Updated: I feel #{@feeling} when #{@updated_event}"
-  sleep 5
-  main_menu
-end
-end
-
-def display_feeling_history
-  prompt = TTY::Prompt.new
+  def update_feeling
+    prompt = TTY::Prompt.new
     if Feeling.all.empty?
-    puts "No feelings to show"
-    sleep 5
-  main_menu
+      puts "No feelings to show"
+      sleep 5
+      main_menu
     else
-   @feelings_array = Feeling.all.map {|feeling| feeling.name}
-   @feeling = prompt.select("Which feeling do you want to see?", @feelings_array)
-   @feeling_instance = Feeling.find_by(name: @feeling)
-   @this_event_id = @feeling_instance.event_id
-   @event_instance = Event.find_by(id: @this_event_id)
-  #  binding.pry
-   puts "Updated: I feel #{@feeling_instance.intensity} #{@feeling_instance.name} when #{@event_instance.description}"
-end
-sleep 5
-main_menu
-end
+      @feelings_array = Feeling.all.map {|feeling| feeling.name}
+      @feeling = prompt.select("Which feeling do you want to update", @feelings_array)
+      @feeling_instance_update = Feeling.find_by(name: @feeling)
+      @updated_feeling = prompt.ask("What do you want to update this feeling to?")
+      @feeling_instance_update.update(name: @updated_feeling)
+      puts "Updated: You feel level #{@feeling_intensity} #{@updated_feeling} when #{@event_description}"
+      sleep 5
+      main_menu
+    end
+  end
+
+  def update_event
+      prompt = TTY::Prompt.new
+      if Event.all.empty?
+      puts "No events to show"
+      sleep 5
+      main_menu
+      else
+      @events_array = Event.all.map {|event| event.category}
+      @event2 = prompt.select("Which event do you want to update?", @events_array)
+      @event_instance_update = Event.find_by(category: @event2)
+      @updated_event = prompt.ask("What do you want to update this event to?")
+      @event_instance_update.update(description: @updated_event)
+      puts "Updated: I feel #{@updated_feeling} when #{@updated_event}"
+      sleep 5
+      main_menu
+    end
+  end
+
+  def display_feeling_history
+    prompt = TTY::Prompt.new
+      if Feeling.all.empty?
+        puts "No feelings to show"
+        sleep 5
+        main_menu
+      else
+      @feelings_array = Feeling.all.map {|feeling| feeling.name}
+      @feeling = prompt.select("Which feeling do you want to see?", @feelings_array)
+      @feeling_instance = Feeling.find_by(name: @feeling)
+      @this_event_id = @feeling_instance.event_id
+      @event_instance = Event.find_by(id: @this_event_id)
+      #  binding.pry
+      puts "I feel level #{@feeling_instance.intensity} #{@feeling_instance.name} when #{@event_instance.description}"
+    end
+    sleep 5
+    main_menu
+  end
 
   def display_event_history
     if Event.all.empty?
       puts "No events to show"
       sleep 5
-  main_menu
-      else
-        prompt = TTY::Prompt.new
-    @events_array = Event.all.map {|event| event.category}
-    @event_choice = prompt.select("Which event do you want to see?", @events_array)
-    @event_instance2 = Event.find_by(category: @event_choice)
-    #  this_feeling_id = event_instance.id
-    @feeling_instance = Feeling.find_by(event_id: @event_instance2.id)
-    puts "When #{@event_instance2.description}, I feel #{@feeling_instance.name}"
+      main_menu
+    else
+      prompt = TTY::Prompt.new
+      @events_array = Event.all.map {|event| event.category}
+      @event_choice = prompt.select("Which event do you want to see?", @events_array)
+      @event_instance2 = Event.find_by(category: @event_choice)
+      #  this_feeling_id = event_instance.id
+      @feeling_instance = Feeling.find_by(event_id: @event_instance2.id)
+      puts "When #{@event_instance2.description}, I feel #{@feeling_instance.name}"
     end
-    sleep 5
-    main_menu
+      sleep 5
+      main_menu
   end
 
   def delete_feeling
@@ -205,13 +208,15 @@ end
     if Feeling.all.empty?
       puts "No feelings to show"
       sleep 5
-  main_menu
+      main_menu
     else
-    @feelings_array = Feeling.all.map {|feeling| feeling.name}
-    @feeling = prompt.select("Which feeling do you want to delete?", @feelings_array)
-    @feeling_instance = Feeling.find_by(name: @feeling)
-    @feeling_instance.destroy
-    main_menu
+      @feelings_array = Feeling.all.map {|feeling| feeling.name}
+      @feeling = prompt.select("Which feeling do you want to delete?", @feelings_array)
+      @feeling_instance = Feeling.find_by(name: @feeling)
+      @feeling_instance.destroy
+    puts "Feeling deleted"
+    sleep 4
+      main_menu
     end
   end
 
@@ -221,30 +226,15 @@ end
     if Event.all.empty?
       puts "No feelings to show"
       sleep 5
-  main_menu
+      main_menu
     else
       @events_array = Event.all.map {|event| event.category}
       @event_choice = prompt.select("Which event do you want to see?", @events_array)
       @event_instance2 = Event.find_by(category: @event_choice)
       @event_instance.destroy
+      puts "Event deleted"
+    sleep 4
       main_menu
     end
   end
-
 end
-# # end
-
-# def display_logger
-#   display_events
-#   display_feelings
-# end
-# def describe_event
-#   prompt = TTY::Prompt.new
-# event_description = prompt.ask("What happened?")
-# event_description
-# end
-
-
-# end
-
-# 'Not so great' then prompt.select("What is your feeling?") do |menu|

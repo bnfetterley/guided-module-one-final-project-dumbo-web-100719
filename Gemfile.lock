@@ -74,6 +74,7 @@ DEPENDENCIES
   activerecord (~> 5.2.3)
   colorize
   httparty (~> 0.17.1)
+  pastel
   pry
   rake
   require_all
