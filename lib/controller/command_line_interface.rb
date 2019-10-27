@@ -8,7 +8,10 @@ class CommandLineInterface
 
   
 
-
+  def play_music
+      file = "/Users/hamidoudiallo/Desktop/guided_project_1/guided-module-one-final-project-dumbo-web-100719/lib/project_music/music.mp3"
+      play =  fork{exec 'mpg123', '-q',file}
+  end
   def render_ascii_art
        return_string = ""
        File.foreach("lib/asii_images/ascii.txt") do |line|
@@ -37,10 +40,8 @@ end
     self.sam_say('Welcome to MoodHacker!')
     sleep (0.03)
     self.alex_say("Take charge of your life by looking inward.")
-    file = "/Users/hamidoudiallo/Desktop/guided_project_1/guided-module-one-final-project-dumbo-web-100719/lib/project_music/music.mp3"
-    play =  exec 'mpg123','-q', file
-    play
-    binding.pry
+    play_music
+    
   end
   
   def get_name
